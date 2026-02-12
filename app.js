@@ -79,8 +79,21 @@ function connect() {
         };
         ws.onmessage = (event) => {
             try {
-                const data = JSON.parse(event.data);
-                handleWeightData(data);
+                const message = JSON.parse(event.data);
+                
+                // Handle different message types from server
+                if (message.type === 'weight' && message.data) {
+                    // Server sends: {type: "weight", data: {weight: X, timestamp: Y}}
+                    handleWeightData(message.data);
+                } else if (message.type === 'history' && message.data) {
+                    // Handle history data (array of weight readings)
+                    addLog(`Received ${message.data.length} historical data points`, 'info');
+                } else if (message.weight !== undefined) {
+                    // Direct weight data: {weight: X, unit: Y, timestamp: Z}
+                    handleWeightData(message);
+                } else {
+                    console.log('Unknown message format:', message);
+                }
             } catch (error) {
                 console.error('Error parsing message:', error);
                 addLog('Error parsing received data', 'error');
@@ -129,9 +142,15 @@ function disconnect() {
 }
 
 function handleWeightData(data) {
-    const weight = parseFloat(data.weight) || 0;
-    const unit = data.unit || 'kg';
+    let weight = parseFloat(data.weight) || 0;
+    let unit = data.unit || 'kg';
     const timestamp = data.timestamp || Date.now();
+    
+    // Convert grams to kg if unit is not specified (ESP32 sends grams)
+    if (!data.unit && weight > 100) {
+        weight = weight / 1000;  // Convert grams to kg
+        unit = 'kg';
+    }
     weightData.current = weight;
     weightData.unit = unit;
     weightData.count++;
