@@ -1,4 +1,4 @@
-﻿// WebSocket connection
+// WebSocket connection
 let ws = null;
 let reconnectInterval = null;
 let isConnecting = false;
@@ -39,7 +39,7 @@ function setupEventListeners() {
     document.getElementById('maxDataPoints').addEventListener('change', (e) => {
         maxDataPoints = parseInt(e.target.value);
         localStorage.setItem('maxDataPoints', maxDataPoints);
-        addLog(\Data points limit changed to \\, 'info');
+        addLog(`Data points limit changed to ${maxDataPoints}`, 'info');
     });
     document.getElementById('wsServer').addEventListener('change', (e) => {
         localStorage.setItem('wsServer', e.target.value);
@@ -63,7 +63,7 @@ function connect() {
     }
     isConnecting = true;
     updateConnectionStatus('connecting', 'Connecting...');
-    addLog(\Connecting to \\, 'info');
+    addLog(`Connecting to ${serverUrl}`, 'info');
     try {
         ws = new WebSocket(serverUrl);
         ws.onopen = () => {
@@ -108,7 +108,7 @@ function connect() {
     } catch (error) {
         isConnecting = false;
         console.error('Connection error:', error);
-        addLog(\Failed to connect: \\, 'error');
+        addLog(`Failed to connect: ${error.message}`, 'error');
         updateConnectionStatus('disconnected', 'Disconnected');
     }
 }
@@ -147,14 +147,14 @@ function handleWeightData(data) {
     weightData.avg = weightData.weights.length > 0 ? sum / weightData.weights.length : 0;
     updateDisplay();
     updateChart();
-    addLog(\Weight reading: \ \\, 'success');
+    addLog(`Weight reading: ${weight.toFixed(2)} ${unit}`, 'success');
 }
 
 function updateDisplay() {
     document.getElementById('currentWeight').textContent = weightData.current.toFixed(2);
     document.getElementById('weightUnit').textContent = weightData.unit;
     const now = new Date();
-    document.getElementById('lastUpdate').textContent = \Last updated: \\;
+    document.getElementById('lastUpdate').textContent = `Last updated: ${formatTime(now)}`;
     document.getElementById('maxWeight').textContent = weightData.max === 0 ? '0.00' : weightData.max.toFixed(2);
     document.getElementById('minWeight').textContent = weightData.min === Infinity ? '0.00' : weightData.min.toFixed(2);
     document.getElementById('avgWeight').textContent = weightData.avg.toFixed(2);
@@ -193,7 +193,7 @@ function initializeChart() {
                     cornerRadius: 8,
                     callbacks: {
                         label: function(context) {
-                            return \Weight: \ kg\;
+                            return `Weight: ${context.parsed.y.toFixed(2)} kg`;
                         }
                     }
                 }
@@ -236,29 +236,29 @@ function updateChart() {
 function updateConnectionStatus(status, text) {
     const badge = document.getElementById('connectionStatus');
     const statusText = document.getElementById('statusText');
-    badge.className = \status-badge \\;
+    badge.className = `status-badge ${status}`;
     statusText.textContent = text;
 }
 
 function addLog(message, type = 'info') {
     const log = document.getElementById('activityLog');
     const item = document.createElement('div');
-    item.className = \ctivity-item \\;
+    item.className = `activity-item ${type}`;
     const icons = {
         info: 'fa-circle-info',
         success: 'fa-circle-check',
         warning: 'fa-triangle-exclamation',
         error: 'fa-circle-xmark'
     };
-    item.innerHTML = \
+    item.innerHTML = `
         <div class="activity-icon">
-            <i class="fas \"></i>
+            <i class="fas ${icons[type] || icons.info}"></i>
         </div>
         <div class="activity-content">
-            <div class="activity-message">\</div>
-            <div class="activity-time">\</div>
+            <div class="activity-message">${message}</div>
+            <div class="activity-time">${formatTime(new Date())}</div>
         </div>
-    \;
+    `;
     log.insertBefore(item, log.firstChild);
     while (log.children.length > 50) {
         log.removeChild(log.lastChild);
@@ -298,18 +298,18 @@ function exportData() {
     for (let i = 0; i < weightData.timestamps.length; i++) {
         const timestamp = weightData.timestamps[i].toISOString();
         const weight = weightData.weights[i].toFixed(2);
-        csv += \\,\\n\;
+        csv += `${timestamp},${weight}\n`;
     }
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = \periyar-scale-data-\.csv\;
+    a.download = `periyar-scale-data-${Date.now()}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
-    addLog(\Exported \ data points to CSV\, 'success');
+    addLog(`Exported ${weightData.timestamps.length} data points to CSV`, 'success');
 }
 
 function loadSettings() {
