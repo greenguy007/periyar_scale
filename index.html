@@ -1,369 +1,292 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PERIYAR Scale - Remote Monitor</title>
+    <title>Periyar Scale - Professional Monitoring</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #2563eb; --primary-dark: #1e40af; --success: #10b981;
+            --danger: #ef4444; --warning: #f59e0b; --bg: #f8fafc;
+            --card: #ffffff; --text: #1e293b; --text-secondary: #64748b;
+            --border: #e2e8f0; --shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #002366 0%, #003d99 100%);
-            min-height: 100vh;
-            padding: 20px;
+            font-family: 'Inter', sans-serif; background: var(--bg);
+            color: var(--text); line-height: 1.6;
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+        .header {
+            background: var(--card); border-bottom: 1px solid var(--border);
+            box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100;
         }
-
-        header {
-            text-align: center;
-            color: white;
-            margin-bottom: 30px;
+        .header-content {
+            max-width: 1400px; margin: 0 auto; padding: 1rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
         }
-
-        header h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
+        .logo { display: flex; align-items: center; gap: 0.75rem; }
+        .logo-icon {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, var(--primary), #3b82f6);
+            border-radius: 8px; display: flex; align-items: center;
+            justify-content: center; color: white; font-size: 1.25rem;
         }
-
-        header .subtitle {
-            font-size: 1.2em;
-            opacity: 0.9;
+        .logo-text h1 { font-size: 1.5rem; font-weight: 700; }
+        .logo-text p { font-size: 0.75rem; color: var(--text-secondary); }
+        .status-badge {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.5rem 1rem; border-radius: 20px;
+            font-size: 0.875rem; font-weight: 500;
         }
-
-        .status-bar {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px 20px;
-            border-radius: 10px;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        .status-badge.connected { background: rgba(16,185,129,0.1); color: var(--success); }
+        .status-badge.disconnected { background: rgba(239,68,68,0.1); color: var(--danger); }
+        .status-badge.connecting { background: rgba(245,158,11,0.1); color: var(--warning); }
         .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #ff4444;
+            width: 8px; height: 8px; border-radius: 50%;
             animation: pulse 2s infinite;
         }
-
-        .status-dot.connected {
-            background: #4CAF50;
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .container { max-width: 1400px; margin: 2rem auto; padding: 0 2rem; }
+        .grid {
+            display: grid; grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem; margin-bottom: 1.5rem;
         }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
         .card {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            background: var(--card); border-radius: 12px; padding: 1.5rem;
+            box-shadow: var(--shadow); border: 1px solid var(--border);
+            transition: all 0.3s ease;
         }
-
-        .card h2 {
-            color: #002366;
-            margin-bottom: 20px;
-            font-size: 1.5em;
+        .card:hover { box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.5rem; padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
         }
-
-        .weight-display {
-            background: linear-gradient(135deg, #002366 0%, #003d99 100%);
-            color: white;
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            margin-bottom: 20px;
+        .card-title {
+            font-size: 1.125rem; font-weight: 600;
+            display: flex; align-items: center; gap: 0.5rem;
         }
-
+        .card-icon { color: var(--primary); }
+        .weight-card { grid-column: span 12; }
+        .weight-display { text-align: center; padding: 2rem 0; }
         .weight-value {
-            font-size: 5em;
-            font-weight: bold;
-            margin: 10px 0;
-            font-family: 'Courier New', monospace;
+            font-size: 5rem; font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), #3b82f6);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; line-height: 1.2; margin-bottom: 0.5rem;
         }
-
-        .weight-unit {
-            font-size: 2em;
-            opacity: 0.9;
+        .weight-unit { font-size: 1.5rem; color: var(--text-secondary); }
+        .weight-timestamp { font-size: 0.875rem; color: var(--text-secondary); margin-top: 1rem; }
+        .stat-card { grid-column: span 3; text-align: center; }
+        .stat-value { font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .stat-label { font-size: 0.875rem; color: var(--text-secondary); }
+        .stat-icon {
+            width: 48px; height: 48px; margin: 0 auto 1rem;
+            border-radius: 12px; display: flex; align-items: center;
+            justify-content: center; font-size: 1.5rem;
         }
-
-        .last-update {
-            margin-top: 15px;
-            opacity: 0.8;
-            font-size: 0.9em;
+        .chart-card { grid-column: span 8; min-height: 400px; }
+        #weightChart { width: 100%; height: 350px; }
+        .controls-card { grid-column: span 4; }
+        .control-group { margin-bottom: 1.5rem; }
+        .control-label {
+            display: block; font-size: 0.875rem; font-weight: 500;
+            margin-bottom: 0.5rem;
         }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
+        input, select {
+            width: 100%; padding: 0.75rem; border: 1px solid var(--border);
+            border-radius: 8px; font-size: 0.875rem; font-family: inherit;
+            transition: all 0.3s ease;
         }
-
-        .stat-box {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
+        input:focus, select:focus {
+            outline: none; border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
         }
-
-        .stat-label {
-            color: #666;
-            font-size: 0.9em;
-            margin-bottom: 5px;
+        .btn {
+            padding: 0.75rem 1.5rem; border: none; border-radius: 8px;
+            font-size: 0.875rem; font-weight: 600; cursor: pointer;
+            transition: all 0.3s ease; display: inline-flex;
+            align-items: center; justify-content: center; gap: 0.5rem;
+            font-family: inherit;
         }
-
-        .stat-value {
-            color: #002366;
-            font-size: 1.8em;
-            font-weight: bold;
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #059669; transform: translateY(-1px); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #dc2626; transform: translateY(-1px); }
+        .btn-secondary { background: #64748b; color: white; }
+        .btn-secondary:hover { background: #475569; transform: translateY(-1px); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-group { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .activity-card { grid-column: span 12; }
+        .activity-log { max-height: 300px; overflow-y: auto; }
+        .activity-item {
+            display: flex; align-items: start; gap: 1rem; padding: 0.75rem;
+            border-left: 3px solid transparent; border-radius: 4px;
+            transition: all 0.3s ease;
         }
-
-        .history-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            max-height: 400px;
-            overflow-y: auto;
-            display: block;
+        .activity-item:hover { background: var(--bg); border-left-color: var(--primary); }
+        .activity-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.875rem; flex-shrink: 0;
         }
-
-        .history-table thead {
-            background: #002366;
-            color: white;
-            position: sticky;
-            top: 0;
+        .activity-item.info .activity-icon { background: rgba(37,99,235,0.1); color: var(--primary); }
+        .activity-item.success .activity-icon { background: rgba(16,185,129,0.1); color: var(--success); }
+        .activity-item.warning .activity-icon { background: rgba(245,158,11,0.1); color: var(--warning); }
+        .activity-item.error .activity-icon { background: rgba(239,68,68,0.1); color: var(--danger); }
+        .activity-content { flex: 1; }
+        .activity-message { font-size: 0.875rem; margin-bottom: 0.25rem; }
+        .activity-time { font-size: 0.75rem; color: var(--text-secondary); }
+        @media (max-width: 1024px) {
+            .stat-card { grid-column: span 6; }
+            .chart-card, .controls-card { grid-column: span 12; }
         }
-
-        .history-table th,
-        .history-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .history-table tbody {
-            display: block;
-            max-height: 350px;
-            overflow-y: auto;
-        }
-
-        .history-table thead,
-        .history-table tbody tr {
-            display: table;
-            width: 100%;
-            table-layout: fixed;
-        }
-
-        .history-table tr:hover {
-            background: #f5f5f5;
-        }
-
-        .chart-container {
-            margin-top: 20px;
-            height: 300px;
-            position: relative;
-        }
-
-        canvas {
-            max-width: 100%;
-        }
-
-        .controls {
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        button {
-            background: #002366;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background 0.3s;
-        }
-
-        button:hover {
-            background: #003d99;
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        .settings-panel {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-
-        .settings-panel label {
-            display: block;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        .settings-panel input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-top: 5px;
-        }
-
-        .alert {
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .alert-error {
-            background: #ffebee;
-            color: #c62828;
-            border-left: 4px solid #c62828;
-        }
-
-        .alert-success {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border-left: 4px solid #2e7d32;
-        }
-
-        .full-width {
-            grid-column: 1 / -1;
+        @media (max-width: 640px) {
+            .container { padding: 0 1rem; }
+            .stat-card { grid-column: span 12; }
+            .weight-value { font-size: 3rem; }
+            .btn-group { flex-direction: column; }
+            .btn { width: 100%; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>PERIYAR</h1>
-            <div class="subtitle">Digital Weighing Scale - Remote Monitor</div>
-        </header>
-
-        <div class="status-bar">
-            <div class="status-indicator">
-                <div class="status-dot" id="statusDot"></div>
-                <span id="statusText">Connecting...</span>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon"><i class="fas fa-weight-scale"></i></div>
+                <div class="logo-text">
+                    <h1>Periyar Scale</h1>
+                    <p>Professional Weight Monitoring System</p>
+                </div>
             </div>
-            <div id="serverInfo">Server: Not connected</div>
-            <div id="lastUpdate">Last update: Never</div>
+            <div class="status-badge disconnected" id="connectionStatus">
+                <span class="status-dot"></span>
+                <span id="statusText">Disconnected</span>
+            </div>
         </div>
-
-        <div id="alertContainer"></div>
-
-        <div class="main-grid">
-            <!-- Current Weight -->
-            <div class="card">
-                <h2>Current Weight</h2>
+    </header>
+    <div class="container">
+        <div class="grid">
+            <div class="card weight-card">
                 <div class="weight-display">
-                    <div class="weight-value" id="weightValue">0</div>
-                    <div class="weight-unit" id="weightUnit">grams</div>
-                    <div class="last-update" id="weightLastUpdate">Waiting for data...</div>
+                    <div class="weight-value" id="currentWeight">0.00</div>
+                    <div class="weight-unit" id="weightUnit">kg</div>
+                    <div class="weight-timestamp" id="lastUpdate">Last updated: Never</div>
                 </div>
-
-                <div class="stats-grid">
-                    <div class="stat-box">
-                        <div class="stat-label">Today's Max</div>
-                        <div class="stat-value" id="maxWeight">0 g</div>
+            </div>
+        </div>
+        <div class="grid">
+            <div class="card stat-card">
+                <div class="stat-icon" style="background: rgba(37,99,235,0.1); color: var(--primary);">
+                    <i class="fas fa-arrow-trend-up"></i>
+                </div>
+                <div class="stat-value" id="maxWeight">0.00</div>
+                <div class="stat-label">Maximum Weight</div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-icon" style="background: rgba(16,185,129,0.1); color: var(--success);">
+                    <i class="fas fa-arrow-trend-down"></i>
+                </div>
+                <div class="stat-value" id="minWeight">0.00</div>
+                <div class="stat-label">Minimum Weight</div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-icon" style="background: rgba(239,68,68,0.1); color: var(--danger);">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <div class="stat-value" id="avgWeight">0.00</div>
+                <div class="stat-label">Average Weight</div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-icon" style="background: rgba(245,158,11,0.1); color: var(--warning);">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-value" id="dataPoints">0</div>
+                <div class="stat-label">Data Points</div>
+            </div>
+        </div>
+        <div class="grid">
+            <div class="card chart-card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-chart-area card-icon"></i>Weight History
+                    </h2>
+                </div>
+                <canvas id="weightChart"></canvas>
+            </div>
+            <div class="card controls-card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-sliders card-icon"></i>Connection Settings
+                    </h2>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="wsServer">WebSocket Server</label>
+                    <input type="text" id="wsServer" placeholder="wss://your-server.com/ws">
+                </div>
+                <div class="control-group">
+                    <div class="btn-group">
+                        <button class="btn btn-success" id="connectBtn">
+                            <i class="fas fa-plug"></i>Connect
+                        </button>
+                        <button class="btn btn-danger" id="disconnectBtn" disabled>
+                            <i class="fas fa-plug-circle-xmark"></i>Disconnect
+                        </button>
                     </div>
-                    <div class="stat-box">
-                        <div class="stat-label">Readings</div>
-                        <div class="stat-value" id="readingCount">0</div>
+                </div>
+                <div class="card-header" style="margin-top: 2rem;">
+                    <h3 class="card-title">
+                        <i class="fas fa-gear card-icon"></i>Data Controls
+                    </h3>
+                </div>
+                <div class="control-group">
+                    <div class="btn-group">
+                        <button class="btn btn-primary" id="clearDataBtn">
+                            <i class="fas fa-trash"></i>Clear Data
+                        </button>
+                        <button class="btn btn-secondary" id="exportBtn">
+                            <i class="fas fa-download"></i>Export CSV
+                        </button>
                     </div>
                 </div>
-            </div>
-
-            <!-- Settings & Connection -->
-            <div class="card">
-                <h2>Connection Settings</h2>
-                <div class="settings-panel">
-                    <label>
-                        WebSocket Server:
-                        <input type="text" id="wsServer" placeholder="ws://localhost:8080/ws">
-                    </label>
-                    <label style="margin-top: 15px;">
-                        <input type="checkbox" id="autoReconnect" checked>
-                        Auto-reconnect on disconnect
-                    </label>
-                </div>
-                <div class="controls">
-                    <button onclick="connectWebSocket()">Connect</button>
-                    <button onclick="disconnectWebSocket()">Disconnect</button>
-                    <button onclick="clearHistory()">Clear History</button>
-                    <button onclick="exportHistory()">Export Data</button>
+                <div class="control-group">
+                    <label class="control-label" for="maxDataPoints">Max Data Points</label>
+                    <select id="maxDataPoints">
+                        <option value="50">50 Points</option>
+                        <option value="100" selected>100 Points</option>
+                        <option value="200">200 Points</option>
+                        <option value="500">500 Points</option>
+                    </select>
                 </div>
             </div>
-
-            <!-- History Chart -->
-            <div class="card full-width">
-                <h2>Weight History Chart</h2>
-                <div class="chart-container">
-                    <canvas id="weightChart"></canvas>
+        </div>
+        <div class="grid">
+            <div class="card activity-card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-clock-rotate-left card-icon"></i>Activity Log
+                    </h2>
+                    <button class="btn btn-secondary" id="clearLogBtn" style="padding: 0.5rem 1rem; font-size: 0.75rem;">
+                        <i class="fas fa-eraser"></i>Clear Log
+                    </button>
                 </div>
-            </div>
-
-            <!-- History Table -->
-            <div class="card full-width">
-                <h2>Recent Readings</h2>
-                <table class="history-table">
-                    <thead>
-                        <tr>
-                            <th>Time</th>
-                            <th>Weight</th>
-                            <th>Unit</th>
-                        </tr>
-                    </thead>
-                    <tbody id="historyBody">
-                        <tr>
-                            <td colspan="3" style="text-align: center; color: #999;">No data yet</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="activity-log" id="activityLog">
+                    <div class="activity-item info">
+                        <div class="activity-icon"><i class="fas fa-circle-info"></i></div>
+                        <div class="activity-content">
+                            <div class="activity-message">System initialized</div>
+                            <div class="activity-time">Just now</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="app.js"></script>
 </body>
