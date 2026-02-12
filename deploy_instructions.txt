@@ -1,0 +1,47 @@
+=== VERCEL DEPLOYMENT INSTRUCTIONS ===
+
+STEP 1: Create GitHub Repository
+--------------------------------
+1. Go to: https://github.com/new
+2. Repository name: periyar-scale-client
+3. Make it PUBLIC
+4. Don't initialize with README
+5. Click "Create repository"
+
+STEP 2: Push Code to GitHub
+---------------------------
+After creating the repo, run these commands in PowerShell:
+
+cd Downloads/wifi_display/complete_system/web_client
+git remote remove origin
+git remote add origin https://github.com/greenguy007/periyar-scale-client.git
+git push -u origin main
+
+STEP 3: Deploy to Vercel
+------------------------
+1. Go to: https://vercel.com/new
+2. Click "Import Git Repository"
+3. Select "greenguy007/periyar-scale-client"
+4. Project Name: periyar-scale-client
+5. Framework Preset: Other
+6. Root Directory: ./
+7. Build Command: (leave empty)
+8. Output Directory: ./
+9. Click "Deploy"
+
+STEP 4: Rename Index File (Important!)
+--------------------------------------
+After first deployment:
+1. In your Vercel dashboard, go to Settings > General
+2. Or rename "index2.html" to "index.html" in your repo and push again
+
+=== CONFIGURATION ===
+WebSocket Server: wss://periyar-scale-server.onrender.com/ws
+This is already configured in app.js!
+
+=== TESTING ===
+Once deployed, your site will be at: https://periyar-scale-client.vercel.app
+The dashboard will automatically connect to your Render WebSocket server.
+
+=== NEED HELP? ===
+If you get stuck, just ask!
